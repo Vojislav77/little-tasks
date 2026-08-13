@@ -1,0 +1,170 @@
+/* global.css — pastel light theme for Little Tasks */
+
+:root {
+  --bg: #eaf2f8;
+  --surface: #ffffff;
+  --surface-2: #e2edf5;
+  --surface-3: #d3e3f0;
+  --border: #c2d8ea;
+  --border-strong: #93bad8;
+  --text: #2b3740;
+  --text-muted: #5f7385;
+  --accent: #5a9fd6;
+  --accent-strong: #367db8;
+  --accent-soft: #d4e7f6;
+  --pink: #f3cfdd;
+  --pink-soft: #fbeaf1;
+  --mint: #a9e3c5;
+  --mint-soft: #ddf4e7;
+  --peach: #f6dfc6;
+  --peach-soft: #fbf0e3;
+  --danger: #c9637f;
+  --danger-soft: #fbeef2;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 10px 30px rgba(40, 90, 130, 0.2);
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+}
+
+button {
+  font-family: inherit;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+}
+
+button:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button.primary:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+button.danger {
+  background: var(--danger-soft);
+  border-color: var(--pink);
+  color: var(--danger);
+}
+
+button.danger:hover {
+  background: var(--pink);
+  border-color: var(--danger);
+}
+
+button.icon {
+  border: none;
+  background: transparent;
+  padding: 4px 7px;
+  border-radius: 7px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+}
+
+button.icon:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  width: 100%;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+textarea {
+  resize: none;
+}
+
+::placeholder {
+  color: var(--text-muted);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+kbd {
+  font-family: inherit;
+  font-size: 11px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: var(--text-muted);
+}

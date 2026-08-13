@@ -1,0 +1,29 @@
+# Node / frontend
+node_modules/
+dist/
+*.local
+
+# Rust
+src-tauri/target/
+src-tauri/gen/
+
+# Tauri
+src-tauri/icon-src.png
+
+# Logs
+*.log
+
+# App data exports
+little-tasks-*.json
+
+# Screenshots
+lt1.png
+lt2.png
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
