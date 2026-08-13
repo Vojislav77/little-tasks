@@ -1,6 +1,6 @@
 # Little Tasks
 
-A simple tasks **tray app with local memory** — a small always-available quick-add
+A simple tasks app — a small always-available quick-add
 popover, a full task editor with task lists, SQLite persistence, and cross-device
 portability via a portable JSON bundle (a stand-in for a future sync service).
 
