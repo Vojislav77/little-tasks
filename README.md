@@ -9,6 +9,12 @@ Built with **Tauri v2** (Rust backend + web UI) and **Svelte 5**. Runs on
 
 ---
 
+## Screenshots
+
+<img width="1110" height="760" alt="lt1" src="https://github.com/user-attachments/assets/8f455736-ce9c-40b8-b312-320f9f65cafe" />
+<img width="1110" height="759" alt="lt2" src="https://github.com/user-attachments/assets/fae4110b-5f91-42a9-8f4e-d49ee0df87c6" />
+
+
 ## Features
 
 - **System tray popover** (KDE StatusNotifier / AppIndicator friendly)
@@ -192,6 +198,8 @@ npm run tauri build -- --bundles appimage,rpm,deb   # Linux example
 CI (`.github/workflows/build.yml`) runs `vitest`, `vite build`, `cargo test`, and
 `tauri build` on `ubuntu-latest`, `macos-latest`, and `windows-latest`, uploading
 the bundle folders as artifacts.
+
+Download the AppImage from Releases (https://github.com/Vojislav77/little-tasks/releases)
 
 ---
 
