@@ -65,8 +65,9 @@ pub fn run() {
                     .map(|v| v == "1")
                     .unwrap_or(false);
                 if enabled {
-                    use tauri_plugin_autostart::ManagerExt;
-                    let _ = app.autolaunch().enable();
+                    if let Err(e) = crate::backend::commands::apply_autostart(app.handle(), true) {
+                        log::warn!("could not apply autostart preference: {e}");
+                    }
                 }
             }
 
