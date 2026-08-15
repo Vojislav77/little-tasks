@@ -1,6 +1,6 @@
 {
   "name": "little-tasks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Little Tasks — a simple tasks tray app with local memory and cross-device portability.",
   "type": "module",
   "private": true,
