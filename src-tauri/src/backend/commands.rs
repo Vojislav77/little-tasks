@@ -315,12 +315,19 @@ pub fn set_setting(
     } else {
         "0"
     };
-    storage(&state)?
-        .set_setting(&key, normalized)
-        .map_err(|e| e.to_string())?;
 
+    // Apply the side-effect first so a failure here can't leave the persisted
+    // setting (and the checkbox) out of sync with reality.
     if key == SETTING_START_WITH_SYSTEM {
         apply_autostart(&app, normalized == "1")?;
+    }
+
+    if let Err(e) = storage(&state)?.set_setting(&key, normalized) {
+        // Persisting failed: roll back the autostart change we just made.
+        if key == SETTING_START_WITH_SYSTEM {
+            let _ = apply_autostart(&app, normalized != "1");
+        }
+        return Err(e.to_string());
     }
 
     let settings = get_settings(state)?;
@@ -328,14 +335,83 @@ pub fn set_setting(
     Ok(settings)
 }
 
-fn apply_autostart(app: &AppHandle, enabled: bool) -> Result<(), String> {
-    use tauri_plugin_autostart::ManagerExt;
-    let manager = app.autolaunch();
-    if enabled {
-        manager.enable().map_err(|e| e.to_string())
-    } else {
-        manager.disable().map_err(|e| e.to_string())
+/// Apply the "start with system" preference.
+///
+/// On Linux the upstream `auto-launch` crate (used by
+/// `tauri-plugin-autostart`) writes the autostart `.desktop` entry with an
+/// unquoted `Exec=` line, which silently fails whenever the app path contains
+/// spaces (e.g. an AppImage named "Little Tasks_*.AppImage"). We write that
+/// entry ourselves with a properly quoted `Exec=` instead.
+pub(crate) fn apply_autostart(app: &AppHandle, enabled: bool) -> Result<(), String> {
+    #[cfg(target_os = "linux")]
+    {
+        linux_apply_autostart(app, enabled)
     }
+    #[cfg(not(target_os = "linux"))]
+    {
+        use tauri_plugin_autostart::ManagerExt;
+        let manager = app.autolaunch();
+        if enabled {
+            manager.enable().map_err(|e| e.to_string())
+        } else {
+            manager.disable().map_err(|e| e.to_string())
+        }
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn linux_apply_autostart(app: &AppHandle, enabled: bool) -> Result<(), String> {
+    // Prefer the AppImage path (spaces and all) so the entry keeps working
+    // wherever the AppImage lives; fall back to the current executable.
+    let app_path = app
+        .env()
+        .appimage
+        .and_then(|p| p.to_str().map(String::from))
+        .or_else(|| std::env::current_exe().ok().map(|p| p.display().to_string()))
+        .ok_or_else(|| "could not resolve the app path for autostart".to_string())?;
+
+    let dir = app
+        .path()
+        .home_dir()
+        .map(|h| h.join(".config").join("autostart"))
+        .map_err(|e| e.to_string())?;
+
+    // Same filename the plugin would use, so we can clean up any prior entry.
+    let entry = dir.join(format!("{}.desktop", app.package_info().name));
+
+    if !enabled {
+        if entry.exists() {
+            std::fs::remove_file(&entry).map_err(|e| e.to_string())?;
+        }
+        return Ok(());
+    }
+
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let data = format!(
+        "[Desktop Entry]\n\
+         Type=Application\n\
+         Version=1.0\n\
+         Name={}\n\
+         Comment=Launch Little Tasks when you log in\n\
+         Exec=\"{}\"\n\
+         StartupNotify=false\n\
+         Terminal=false\n\
+         X-GNOME-Autostart-enabled=true\n",
+        app.package_info().name,
+        escape_desktop_exec(&app_path),
+    );
+    std::fs::write(&entry, data).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+/// Escape a path for use inside a quoted `Exec=` value, per the Desktop Entry
+/// Specification (`%` must become `%%`, `"` must become `\"`).
+#[cfg(target_os = "linux")]
+fn escape_desktop_exec(value: &str) -> String {
+    value
+        .replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('%', "%%")
 }
 
 #[derive(Debug, Serialize, Deserialize)]
